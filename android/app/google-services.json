@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "422385423002",
+    "project_id": "pmovel-239d5",
+    "storage_bucket": "pmovel-239d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422385423002:android:fe644027ec46141ab5c523",
+        "android_client_info": {
+          "package_name": "com.example.femme_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrbtmojmZnSpLfMjS2NwzZDmmYRCnpvGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
