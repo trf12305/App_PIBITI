@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'femme_shell.dart';
 import '../services/auth_service.dart';
 import 'register_screen.dart';
+import 'forgot_passwors_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,53 +36,53 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(content: Text(texto)),
     );
   }
-
   Future<void> _entrar() async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint('LOGIN: botão Entrar acionado');
+
+    if (!_formKey.currentState!.validate()) {
+      debugPrint('LOGIN: formulário inválido');
+      return;
+    }
 
     setState(() => _carregando = true);
 
     try {
+      debugPrint('LOGIN: iniciando autenticação Firebase');
+
       await _authService.entrar(
         email: _emailController.text.trim(),
         senha: _senhaController.text,
       );
 
+      debugPrint('LOGIN: autenticação concluída');
+
       if (!mounted) return;
+
+      debugPrint('LOGIN: abrindo FemmeShell');
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const FemmeShell(),
         ),
             (route) => false,
-      ); } on FirebaseAuthException catch (e) {
+      );
+    } on FirebaseAuthException catch (e) {
+      debugPrint('LOGIN: erro Firebase ${e.code} - ${e.message}');
+
       if (!mounted) return;
 
-      String mensagem = 'Não foi possível entrar.';
+      _mensagem('Erro ao entrar: ${e.message ?? e.code}');
+    } catch (e, stackTrace) {
+      debugPrint('LOGIN: erro inesperado: $e');
+      debugPrintStack(stackTrace: stackTrace);
 
-      switch (e.code) {
-        case 'invalid-credential':
-        case 'wrong-password':
-        case 'user-not-found':
-          mensagem = 'E-mail ou senha incorretos.';
-          break;
-        case 'invalid-email':
-          mensagem = 'E-mail inválido.';
-          break;
-        case 'too-many-requests':
-          mensagem = 'Muitas tentativas. Tente mais tarde.';
-          break;
-        case 'user-disabled':
-          mensagem = 'Esta conta está desativada.';
-          break;
-      }
-
-      _mensagem(mensagem);
-    } catch (_) {
       if (!mounted) return;
-      _mensagem('Ocorreu um erro inesperado.');
+
+      _mensagem('Ocorreu um erro ao entrar.');
     } finally {
-      if (mounted) setState(() => _carregando = false);
+      if (mounted) {
+        setState(() => _carregando = false);
+      }
     }
   }
 
@@ -225,11 +225,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: _recuperarSenha,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       'Esqueci minha senha',
                       style: TextStyle(color: rosa),
